@@ -1,13 +1,10 @@
 const app = require('express')();
 const consign = require('consign');
 const knex = require('knex');
-// const knexLogger = require('knex-logger');
 
 const knexfile = require('../knexfile');
 
 app.db = knex(knexfile.test);
-
-// app.use(knexLogger(app.db));
 
 consign({ cwd: 'src', verbose: false })
     .include('./config/middlewares.js')
@@ -18,6 +15,18 @@ consign({ cwd: 'src', verbose: false })
 
 app.get('/', (request, response) => {
     response.status(200).send();
+});
+
+app.use((error, request, response, next) => {
+    const { name, message, stack } = error;
+
+    if(name === 'ValidationError') {
+        response.status(400).json({ error: message });
+    } else {
+        response.status(500).json({ name, message, stack });
+    }
+
+    next();
 });
 
 module.exports = app;

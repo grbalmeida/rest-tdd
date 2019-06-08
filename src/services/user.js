@@ -1,3 +1,5 @@
+const ValidationError = require('../errors/ValidationError');
+
 module.exports = app => {
     const findAll = (filter = {}) => {
         return app.db('users')
@@ -6,13 +8,13 @@ module.exports = app => {
     };
 
     const save = async user => {
-        if(!user.name) return { error: 'Name can not be empty' };
-        if(!user.email) return { error: 'Email can not be empty' };
-        if(!user.password) return { error: 'Password can not be empty' };
+        if(!user.name) throw new ValidationError('Name can not be empty');
+        if(!user.email) throw new ValidationError('Email can not be empty');
+        if(!user.password) throw new ValidationError('Password can not be empty');
 
         const userDb = await findAll({ email: user.email });
 
-        if(userDb && userDb.length > 0) return { error: 'A user with this email already exists' };
+        if(userDb && userDb.length > 0) throw new ValidationError('A user with this email already exists');
 
         return app.db('users').insert(user, '*');
     };

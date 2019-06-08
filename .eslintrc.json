@@ -8,8 +8,12 @@
     "globals": {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly",
-	"expect": true,
-	"test": true
+        "expect": true,
+        "test": true,
+        "beforeEach": true,
+        "afterEach": true,
+        "beforeAll": true,
+        "afterAll": true
     },
     "parserOptions": {
         "ecmaVersion": 2018
