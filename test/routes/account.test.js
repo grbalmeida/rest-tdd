@@ -4,7 +4,7 @@ const jwt = require('jwt-simple');
 const app = require('../../src/app');
 const knex = app.db;
 
-const MAIN_ROUTE = '/accounts';
+const MAIN_ROUTE = '/v1/accounts';
 
 let user;
 

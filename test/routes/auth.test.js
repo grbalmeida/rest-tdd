@@ -3,6 +3,9 @@ const supertest = require('supertest');
 const app = require('../../src/app');
 const knex = app.db;
 
+const SIGNIN = '/auth/signin';
+const SIGNUP = '/auth/signup';
+
 beforeAll(async () => {
     await knex.migrate.rollback();
     await knex.migrate.latest();
@@ -12,7 +15,7 @@ afterAll(() => knex.migrate.rollback());
 
 test('Should create a user via signup', async () => {
     const result = await supertest(app)
-        .post('/auth/signup')
+        .post(SIGNUP)
         .send({ name: 'Olivia', email: 'olivia@email', password: '123456' });
 
     expect(result.status).toBe(201);
@@ -29,7 +32,7 @@ test('Should receive a token when logging in', async () => {
     });
 
     const result = await supertest(app)
-        .post('/auth/signin')
+        .post(SIGNIN)
         .send({ email, password });
 
     expect(result.status).toBe(200);
@@ -43,7 +46,7 @@ test('Should not authenticate a user with a wrong password', async () => {
     await app.services.user.save({ name: 'Maria', email, password: '123456' });
 
     const result = await supertest(app)
-        .post('/auth/signin')
+        .post(SIGNIN)
         .send({ email, password });
 
     expect(result.status).toBe(400);
@@ -52,7 +55,7 @@ test('Should not authenticate a user with a wrong password', async () => {
 
 test('Should not authenticate an invalid user', async () => {
     const result = await supertest(app)
-        .post('/auth/signin')
+        .post(SIGNIN)
         .send({ email: 'notexists@email', password: '123456' });
 
     expect(result.status).toBe(400);
@@ -60,7 +63,7 @@ test('Should not authenticate an invalid user', async () => {
 });
 
 test('Should not access a protected route without a token', async () => {
-    const result = await supertest(app).get('/users');
+    const result = await supertest(app).get('/v1/users');
 
     expect(result.status).toBe(401);
 });
