@@ -23,6 +23,8 @@ app.use((error, request, response, next) => {
 
     if(name === 'ValidationError') {
         response.status(400).json({ error: message });
+    } else if(name === 'UndueRecourseError') {
+        response.status(403).json({ error: message });
     } else {
         response.status(500).json({ name, message, stack });
     }

@@ -7,13 +7,21 @@ module.exports = app => {
             .first();
     };
 
-    const findAll = () => {
+    const findAll = (userId) => {
         return app.db('accounts')
-            .select('id', 'name', 'user_id');
+            .select('id', 'name', 'user_id')
+            .where({ user_id: userId });
     };
 
-    const save = account => {
+    const save = async account => {
         if(!account.name) throw new ValidationError('Name can not be empty');
+
+        const accountDb = await find({
+            name: account.name,
+            user_id: account.user_id
+        });
+
+        if(accountDb) throw new ValidationError('An account with this name already exists');
 
         return app.db('accounts')
             .insert(account, '*');
